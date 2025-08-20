@@ -44,6 +44,9 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="UrN-fL-zYC" kind="show" id="J5d-Je-3qm"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -120,7 +123,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dZm-Id-uDR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3086.2595419847326" y="-13.380281690140846"/>
+            <point key="canvasLocation" x="3094" y="-218"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2zC-gf-3fw">
@@ -156,7 +159,50 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NxL-hi-aiG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2159.5419847328244" y="-13.380281690140846"/>
+            <point key="canvasLocation" x="2117" y="-218"/>
+        </scene>
+        <!--메모 보기-->
+        <scene sceneID="Exy-vS-McW">
+            <objects>
+                <viewController id="UrN-fL-zYC" customClass="DetailViewController" customModule="Memo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vb2-ST-ayH">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="bFI-yN-Cgl">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="769"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cyf-jc-MDf">
+                                <rect key="frame" x="0.0" y="769" width="393" height="49"/>
+                                <items>
+                                    <barButtonItem title="Item" id="hl3-6X-40U"/>
+                                </items>
+                            </toolbar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="bqd-wu-tsv"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="cyf-jc-MDf" firstAttribute="leading" secondItem="bqd-wu-tsv" secondAttribute="leading" id="e3C-YL-klF"/>
+                            <constraint firstItem="bFI-yN-Cgl" firstAttribute="leading" secondItem="bqd-wu-tsv" secondAttribute="leading" id="fXo-gY-IMR"/>
+                            <constraint firstItem="bFI-yN-Cgl" firstAttribute="top" secondItem="vb2-ST-ayH" secondAttribute="top" id="g56-6j-heN"/>
+                            <constraint firstItem="cyf-jc-MDf" firstAttribute="top" secondItem="bFI-yN-Cgl" secondAttribute="bottom" id="hqf-nm-TZ8"/>
+                            <constraint firstItem="bFI-yN-Cgl" firstAttribute="trailing" secondItem="bqd-wu-tsv" secondAttribute="trailing" id="pG8-x3-QVT"/>
+                            <constraint firstItem="cyf-jc-MDf" firstAttribute="bottom" secondItem="bqd-wu-tsv" secondAttribute="bottom" id="rvH-ka-DJa"/>
+                            <constraint firstItem="cyf-jc-MDf" firstAttribute="trailing" secondItem="bqd-wu-tsv" secondAttribute="trailing" id="zkE-29-DaB"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="메모 보기" largeTitleDisplayMode="never" id="UO8-7H-MFf"/>
+                    <connections>
+                        <outlet property="contentTextView" destination="bFI-yN-Cgl" id="0fT-B9-rcU"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="F7E-5A-9so" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2116.7938931297708" y="498.59154929577466"/>
         </scene>
     </scenes>
     <resources>

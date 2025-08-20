@@ -26,6 +26,14 @@ class ListViewController: UIViewController {
       self.memoTableView.insertRows(at: [IndexPath], with: .automatic)
     }
   }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if let cell = sender as? UITableViewCell, let indexPath = memoTableView.indexPath(for: cell) {
+      if let vc = segue.destination as? DetailViewController {
+        vc.memo = DataManager.shared.list[indexPath.row]
+      }
+    }
+  }
 }
 
 extension ListViewController: UITableViewDataSource {
@@ -41,5 +49,11 @@ extension ListViewController: UITableViewDataSource {
     cell.detailTextLabel?.text = target.dateString
     
     return cell
+  }
+}
+
+extension ListViewController: UITableViewDelegate {
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
   }
 }
