@@ -10,9 +10,15 @@ import UIKit
 extension Notification.Name {
   // 메모 추가 리스너
   static let memoDidInsert = Notification.Name("memoDidInsert")
+  
+  static let memoDidUpdate = Notification.Name("memoDidUpdate")
 }
 
 class ComposeViewController: UIViewController {
+  
+  // 메모 편집으로 접근하는 경우
+  var editTarget: MemoEntity?
+  
   @IBOutlet weak var contnetTextView: UITextView!
   
   @IBAction func closeVC(_ sender: Any) {
@@ -25,8 +31,13 @@ class ComposeViewController: UIViewController {
       return
     }
     
-    DataManager.shared.insert(memo: text)
-    NotificationCenter.default.post(name: .memoDidInsert, object: nil)
+    if let editTarget {
+      DataManager.shared.update(entity: editTarget, content: text)
+      NotificationCenter.default.post(name: .memoDidUpdate, object: nil, userInfo: ["memo": editTarget])
+    } else {
+      DataManager.shared.insert(memo: text)
+      NotificationCenter.default.post(name: .memoDidInsert, object: nil)
+    }
     
     dismiss(animated: true)
   }
@@ -35,7 +46,13 @@ class ComposeViewController: UIViewController {
     super.viewDidLoad()
     
     contnetTextView.becomeFirstResponder()
-    navigationItem.title = "새 메모"
+    
+    if let editTarget {
+      navigationItem.title = "편집"
+      contnetTextView.text = editTarget.content
+    } else {
+      navigationItem.title = "새 메모"
+    }
   }
   
   override func viewWillDisappear(_ animated: Bool) {

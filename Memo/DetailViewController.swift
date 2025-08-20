@@ -19,5 +19,16 @@ class DetailViewController: UIViewController {
     if let memo {
       contentTextView.text = memo.content
     }
+    
+    // 메모 업데이트 옵저버
+    NotificationCenter.default.addObserver(forName: .memoDidUpdate, object: nil, queue: .main) { _ in
+      self.contentTextView.text = self.memo?.content
+    }
+  }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if let vc = segue.destination.children.first as? ComposeViewController {
+      vc.editTarget = memo
+    }
   }
 }

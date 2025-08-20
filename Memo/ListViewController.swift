@@ -25,6 +25,14 @@ class ListViewController: UIViewController {
       // 다른 셀은 그대로 두고 상단에 새로운 메모 셀만 추가
       self.memoTableView.insertRows(at: [IndexPath], with: .automatic)
     }
+    
+    NotificationCenter.default.addObserver(forName: .memoDidUpdate, object: nil, queue: .main) { noti in
+      if let memo = noti.userInfo?["memo"] as? MemoEntity, let index = DataManager.shared.list.firstIndex(of: memo) {
+        let indexPath = IndexPath(row: index, section: 0)
+        
+        self.memoTableView.reloadRows(at: [indexPath], with: .automatic)
+      }
+    }
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

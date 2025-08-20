@@ -126,4 +126,9 @@ class DataManager {
     saveContext()
     list.insert(newMemo, at: 0) // 메모 목록에 추가
   }
+  
+  func update(entity: MemoEntity, content: String) {
+    entity.content = content
+    saveContext()
+  }
 }
