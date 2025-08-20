@@ -9,10 +9,22 @@ import UIKit
 
 class ListViewController: UIViewController {
 
+  @IBOutlet weak var memoTableView: UITableView!
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
     DataManager.shared.fetch()
+    
+    // 메모 추가시 tableView reload
+    NotificationCenter.default.addObserver(forName: .memoDidInsert, object: nil, queue: .main) { _ in
+      // self.memoTableView.reloadData() // 전체 셀 삭제후 다시 그림
+      
+      let IndexPath = IndexPath(row: 0, section: 0)
+      
+      // 다른 셀은 그대로 두고 상단에 새로운 메모 셀만 추가
+      self.memoTableView.insertRows(at: [IndexPath], with: .automatic)
+    }
   }
 }
 
