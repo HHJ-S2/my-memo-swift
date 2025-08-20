@@ -75,7 +75,7 @@ class DataManager {
         let memo = MemoEntity(context: mainContext) // Entity 인스턴스 생성
         memo.content = sentence
         
-        // 랜덤 날짜 생성 - 현재날짜 기준 +=30
+        // 랜덤 날짜 생성 - 현재날짜 기준 -30
         let randomDate = Date(timeIntervalSinceNow: Double.random(in: 0 ... 3600 * 24 * 30) * -1)
         memo.insertDate = randomDate
          */
