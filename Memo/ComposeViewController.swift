@@ -62,4 +62,8 @@ class ComposeViewController: UIViewController {
       contnetTextView.resignFirstResponder()
     }
   }
+  
+  deinit {
+    print(self, #function)
+  }
 }

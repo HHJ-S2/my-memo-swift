@@ -11,14 +11,19 @@ class ListViewController: UIViewController {
 
   @IBOutlet weak var memoTableView: UITableView!
   
+  // VC가 뷰 계층에 추가 되었을때 reload 하기위함
+  var reloadTargetIndexPath: IndexPath?
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
     DataManager.shared.fetch()
     
     // 메모 추가시 tableView reload
-    NotificationCenter.default.addObserver(forName: .memoDidInsert, object: nil, queue: .main) { _ in
+    NotificationCenter.default.addObserver(forName: .memoDidInsert, object: nil, queue: .main) { [weak self] _ in
       // self.memoTableView.reloadData() // 전체 셀 삭제후 다시 그림
+      
+      guard let self = self else { return }
       
       let IndexPath = IndexPath(row: 0, section: 0)
       
@@ -26,12 +31,26 @@ class ListViewController: UIViewController {
       self.memoTableView.insertRows(at: [IndexPath], with: .automatic)
     }
     
-    NotificationCenter.default.addObserver(forName: .memoDidUpdate, object: nil, queue: .main) { noti in
+    NotificationCenter.default.addObserver(forName: .memoDidUpdate, object: nil, queue: .main) { [weak self] noti in
+      guard let self = self else { return }
+      
       if let memo = noti.userInfo?["memo"] as? MemoEntity, let index = DataManager.shared.list.firstIndex(of: memo) {
         let indexPath = IndexPath(row: index, section: 0)
         
-        self.memoTableView.reloadRows(at: [indexPath], with: .automatic)
+        // VC가 뷰 계층에 추가되어있지 않을때 reload 하는경우 warning
+        // self.memoTableView.reloadRows(at: [indexPath], with: .automatic)
+        
+        self.reloadTargetIndexPath = indexPath
       }
+    }
+  }
+  
+  override func viewIsAppearing(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    if let reloadTargetIndexPath {
+      self.memoTableView.reloadRows(at: [reloadTargetIndexPath], with: .automatic)
+      self.reloadTargetIndexPath = nil
     }
   }
   
