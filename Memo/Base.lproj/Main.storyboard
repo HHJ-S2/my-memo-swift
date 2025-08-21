@@ -90,19 +90,20 @@
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="JBe-C2-abD">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to </string>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="9AA-OR-56t"/>
+                        <keyboardLayoutGuide key="keyboard" id="nrV-4O-gpL"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="JBe-C2-abD" firstAttribute="top" secondItem="JNs-W7-TgE" secondAttribute="top" id="L36-Sl-7oD"/>
                             <constraint firstItem="JBe-C2-abD" firstAttribute="leading" secondItem="9AA-OR-56t" secondAttribute="leading" id="l4e-gi-l2b"/>
                             <constraint firstItem="JBe-C2-abD" firstAttribute="trailing" secondItem="9AA-OR-56t" secondAttribute="trailing" id="nNt-EA-33x"/>
-                            <constraint firstItem="JBe-C2-abD" firstAttribute="bottom" secondItem="9AA-OR-56t" secondAttribute="bottom" id="y53-zH-z64"/>
+                            <constraint firstItem="JBe-C2-abD" firstAttribute="bottom" secondItem="nrV-4O-gpL" secondAttribute="top" id="y53-zH-z64"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="WkS-iw-ok9">

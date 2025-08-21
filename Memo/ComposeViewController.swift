@@ -19,6 +19,9 @@ class ComposeViewController: UIViewController {
   // 메모 편집으로 접근하는 경우
   var editTarget: MemoEntity?
   
+  // 편집 화면일때 이전 텍스트
+  var originalContent = ""
+  
   @IBOutlet weak var contnetTextView: UITextView!
   
   @IBAction func closeVC(_ sender: Any) {
@@ -50,9 +53,13 @@ class ComposeViewController: UIViewController {
     if let editTarget {
       navigationItem.title = "편집"
       contnetTextView.text = editTarget.content
+      originalContent = editTarget.content ?? ""
     } else {
       navigationItem.title = "새 메모"
+      contnetTextView.text = ""
     }
+    
+    contnetTextView.delegate = self
   }
   
   override func viewWillDisappear(_ animated: Bool) {
@@ -65,5 +72,16 @@ class ComposeViewController: UIViewController {
   
   deinit {
     print(self, #function)
+  }
+}
+
+extension ComposeViewController: UITextViewDelegate {
+  func textViewDidChange(_ textView: UITextView) {
+    if let _ = editTarget {
+      // 이전글이 지금글과 다를때 스와이프 닫기 불가
+      isModalInPresentation = originalContent != textView.text
+    } else {
+      isModalInPresentation = !textView.text.isEmpty
+    }
   }
 }
