@@ -7,9 +7,9 @@
 
 import UIKit
 
-extension Notification.Name {
-  static let memoDidDelete = Notification.Name("memoDidDelete")
-}
+// extension Notification.Name {
+//   static let memoDidDelete = Notification.Name("memoDidDelete")
+// }
 
 class DetailViewController: UIViewController {
   
@@ -23,10 +23,12 @@ class DetailViewController: UIViewController {
     let okAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
       guard let memo = self?.memo else { return }
       
-      if let index = DataManager.shared.delete(entity: memo) {
-        print(index)
-        NotificationCenter.default.post(name: .memoDidDelete, object: nil, userInfo: ["index": index])
-      }
+      // if let index = DataManager.shared.delete(entity: memo) {
+      //   print(index)
+      //   NotificationCenter.default.post(name: .memoDidDelete, object: nil, userInfo: ["index": index])
+      // }
+      
+      DataManager.shared.delete(entity: memo)
       
       self?.navigationController?.popViewController(animated: true)
     }
@@ -46,9 +48,15 @@ class DetailViewController: UIViewController {
     }
     
     // 메모 업데이트 옵저버
-    NotificationCenter.default.addObserver(forName: .memoDidUpdate, object: nil, queue: .main) { [weak self] _ in
-      guard let self else { return } // 옵저버에서 self 사용시 강한참조 주의
-      
+    // NotificationCenter.default.addObserver(forName: .memoDidUpdate, object: nil, queue: .main) { [weak self] _ in
+    //   guard let self else { return } // 옵저버에서 self 사용시 강한참조 주의
+    //   
+    //   self.contentTextView.text = self.memo?.content
+    // }
+    
+    NotificationCenter.default.addObserver(forName: .NSManagedObjectContextDidSave, object: nil, queue: .main) { [weak self] _ in
+      guard let self else { return }
+    
       self.contentTextView.text = self.memo?.content
     }
   }

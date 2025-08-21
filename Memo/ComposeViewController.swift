@@ -7,12 +7,14 @@
 
 import UIKit
 
+/**
 extension Notification.Name {
   // 메모 추가 리스너
   static let memoDidInsert = Notification.Name("memoDidInsert")
   
   static let memoDidUpdate = Notification.Name("memoDidUpdate")
 }
+ */
 
 class ComposeViewController: UIViewController {
   
@@ -36,10 +38,10 @@ class ComposeViewController: UIViewController {
     
     if let editTarget {
       DataManager.shared.update(entity: editTarget, content: text)
-      NotificationCenter.default.post(name: .memoDidUpdate, object: nil, userInfo: ["memo": editTarget])
+      // NotificationCenter.default.post(name: .memoDidUpdate, object: nil, userInfo: ["memo": editTarget])
     } else {
       DataManager.shared.insert(memo: text)
-      NotificationCenter.default.post(name: .memoDidInsert, object: nil)
+      // NotificationCenter.default.post(name: .memoDidInsert, object: nil)
     }
     
     dismiss(animated: true)

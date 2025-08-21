@@ -6,15 +6,16 @@
 //
 
 import UIKit
+import CoreData
 
 class ListViewController: UIViewController {
 
   @IBOutlet weak var memoTableView: UITableView!
   
   // VC가 뷰 계층에 추가 되었을때 reload 하기위함
-  var reloadTargetIndexPath: IndexPath?
+  // var reloadTargetIndexPath: IndexPath?
   
-  var deleteTargetIndexPath: IndexPath?
+  // var deleteTargetIndexPath: IndexPath?
   
   // 네비게이션 검색 바
   func setupSearchBar() {
@@ -29,9 +30,12 @@ class ListViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    DataManager.shared.fetch()
+    // DataManager.shared.fetch()
     setupSearchBar()
     
+    DataManager.shared.fetchedResults.delegate = self
+    
+    /**
     // 메모 추가시 tableView reload
     NotificationCenter.default.addObserver(forName: .memoDidInsert, object: nil, queue: .main) { [weak self] _ in
       // self.memoTableView.reloadData() // 전체 셀 삭제후 다시 그림
@@ -66,11 +70,13 @@ class ListViewController: UIViewController {
         self.deleteTargetIndexPath = indexPath
       }
     }
+     */
   }
   
   override func viewIsAppearing(_ animated: Bool) {
     super.viewDidAppear(animated)
     
+    /**
     if let reloadTargetIndexPath {
       self.memoTableView.reloadRows(at: [reloadTargetIndexPath], with: .automatic)
       self.reloadTargetIndexPath = nil
@@ -80,25 +86,40 @@ class ListViewController: UIViewController {
       self.memoTableView.deleteRows(at: [deleteTargetIndexPath], with: .automatic)
       self.deleteTargetIndexPath = nil
     }
+     */
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if let cell = sender as? UITableViewCell, let indexPath = memoTableView.indexPath(for: cell) {
       if let vc = segue.destination as? DetailViewController {
-        vc.memo = DataManager.shared.list[indexPath.row]
+        // vc.memo = DataManager.shared.list[indexPath.row]
+        vc.memo = DataManager.shared.fetchedResults.object(at: indexPath)
       }
     }
   }
 }
 
 extension ListViewController: UITableViewDataSource {
+  // 섹션 개수
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return DataManager.shared.fetchedResults.sections?.count ?? 0
+  }
+  
+  // 섹션 내 row 개수
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return DataManager.shared.list.count
+    // return DataManager.shared.list.count
+    
+    guard let sections = DataManager.shared.fetchedResults.sections else { return 0 }
+    
+    let sectionInfo = sections[section]
+    
+    return sectionInfo.numberOfObjects
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-    let target = DataManager.shared.list[indexPath.row]
+    // let target = DataManager.shared.list[indexPath.row]
+    let target = DataManager.shared.fetchedResults.object(at: indexPath)
     
     cell.textLabel?.text = target.content
     cell.detailTextLabel?.text = target.dateString
@@ -109,8 +130,8 @@ extension ListViewController: UITableViewDataSource {
   // 우측 스와이프 액션
   func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      DataManager.shared.delete(at: indexPath.row)
-      tableView.deleteRows(at: [indexPath], with: .automatic)
+      DataManager.shared.delete(at: indexPath)
+      // tableView.deleteRows(at: [indexPath], with: .automatic)
     }
   }
 }
@@ -135,5 +156,40 @@ extension ListViewController: UISearchResultsUpdating {
     }
     
     DataManager.shared.fetch(keyword: keyword)
+  }
+}
+
+
+extension ListViewController: NSFetchedResultsControllerDelegate {
+  func controllerWillChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
+    memoTableView.beginUpdates()
+  }
+  
+  // 개별 entity가 업데이트 될 때마다 호출됨
+  func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    switch type {
+    case .insert:
+      if let insertIndexPath = newIndexPath {
+        memoTableView.insertRows(at: [insertIndexPath], with: .automatic)
+      }
+    case .delete:
+      if let deleteIndexPath = indexPath {
+        memoTableView.deleteRows(at: [deleteIndexPath], with: .automatic)
+      }
+    case .update:
+      if let updateIndexPath = indexPath {
+        memoTableView.reloadRows(at: [updateIndexPath], with: .automatic)
+      }
+    case .move:
+      if let originalIndexPath = indexPath, let targetIndexPath = newIndexPath {
+        memoTableView.moveRow(at: originalIndexPath, to: targetIndexPath)
+      }
+    default:
+      break
+    }
+  }
+  
+  func controllerDidChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
+    memoTableView.endUpdates()
   }
 }

@@ -11,19 +11,55 @@ import CoreData
 class DataManager {
   // 싱글톤
   static let shared = DataManager()
-  private init() {} // 외부에서 생성하지 못하도록 private 키워드 추가
   
+  let persistentContainer: NSPersistentContainer
+  
+  let mainContext: NSManagedObjectContext
+  
+  let fetchedResults: NSFetchedResultsController<MemoEntity>
+  
+  // 외부에서 생성하지 못하도록 private 키워드 추가
+  private init() {
+    let container = NSPersistentContainer(name: "Memo")
+    
+    container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+      if let error = error as NSError? {
+        fatalError("Unresolved error \(error), \(error.userInfo)")
+      }
+    })
+    
+    persistentContainer = container
+    mainContext = persistentContainer.viewContext
+    
+    let request = MemoEntity.fetchRequest()
+    let sortByDateDesc = NSSortDescriptor(keyPath: \MemoEntity.insertDate, ascending: false)
+    
+    request.sortDescriptors = [sortByDateDesc]
+    
+    fetchedResults = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: "MemoCache")
+    
+    do {
+      try fetchedResults.performFetch()
+    } catch {
+      print(error)
+    }
+  }
+  
+  /**
   // Context 접근용
   var mainContext: NSManagedObjectContext {
     return persistentContainer.viewContext
   }
+  */
   
   // 메모 목록
-  var list = [MemoEntity]()
+  // var list = [MemoEntity]()
   
   // MARK: - Core Data stack
   
+  /**
   lazy var persistentContainer: NSPersistentContainer = {
+    
     let container = NSPersistentContainer(name: "Memo")
     container.loadPersistentStores(completionHandler: { (storeDescription, error) in
       if let error = error as NSError? {
@@ -31,7 +67,9 @@ class DataManager {
       }
     })
     return container
+     
   }()
+  */
   
   // MARK: - Core Data Saving support
   
@@ -103,20 +141,26 @@ class DataManager {
   
   // 메모 목록 패칭
   func fetch(keyword: String? = nil) {
-    let request = MemoEntity.fetchRequest()
+    // let request = MemoEntity.fetchRequest()
     
     if let keyword {
       // 검색조건 설정
-      request.predicate = NSPredicate(format: "%K CONTAINS [c] %@", #keyPath(MemoEntity.content), keyword)
+      // request.predicate = NSPredicate(format: "%K CONTAINS [c] %@", #keyPath(MemoEntity.content), keyword)
+      let predicate = NSPredicate(format: "%K CONTAINS [c] %@", #keyPath(MemoEntity.content), keyword)
+      
+      fetchedResults.fetchRequest.predicate = predicate
+    } else {
+      fetchedResults.fetchRequest.predicate = nil
     }
     
     // 내림차순 정렬
-    let sortByDateDesc = NSSortDescriptor(keyPath: \MemoEntity.insertDate, ascending: false)
+    // let sortByDateDesc = NSSortDescriptor(keyPath: \MemoEntity.insertDate, ascending: false)
     
-    request.sortDescriptors = [sortByDateDesc]
+    // request.sortDescriptors = [sortByDateDesc]
     
     do {
-      list = try mainContext.fetch(request)
+      // list = try mainContext.fetch(request)
+      try fetchedResults.performFetch()
     } catch {
       print(error)
     }
@@ -129,7 +173,7 @@ class DataManager {
     newMemo.insertDate = .now
     
     saveContext()
-    list.insert(newMemo, at: 0) // 메모 목록에 추가
+    // list.insert(newMemo, at: 0) // 메모 목록에 추가
   }
   
   func update(entity: MemoEntity, content: String) {
@@ -138,22 +182,23 @@ class DataManager {
   }
   
   // return 값 사용하지 않았을때 경고 표시 해제
-  @discardableResult
-  func delete(entity: MemoEntity) -> Int? {
+  // @discardableResult
+  func delete(entity: MemoEntity) {
     mainContext.delete(entity) // context에 자동으로 delete 됨
     saveContext()
     
     // 메모 목록에서 삭제
-    if let index = list.firstIndex(of: entity) {
-      list.remove(at: index)
-      return index
-    }
+    // if let index = list.firstIndex(of: entity) {
+    //   list.remove(at: index)
+    //   return index
+    // }
     
-    return nil
+    // return nil
   }
   
-  func delete(at index: Int) {
-    let target = list[index]
+  func delete(at indexPath: IndexPath) {
+    // let target = list[index]
+    let target = fetchedResults.object(at: indexPath)
     
     delete(entity: target)
   }
