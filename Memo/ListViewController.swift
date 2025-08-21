@@ -14,6 +14,8 @@ class ListViewController: UIViewController {
   // VC가 뷰 계층에 추가 되었을때 reload 하기위함
   var reloadTargetIndexPath: IndexPath?
   
+  var deleteTargetIndexPath: IndexPath?
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -43,6 +45,16 @@ class ListViewController: UIViewController {
         self.reloadTargetIndexPath = indexPath
       }
     }
+    
+    NotificationCenter.default.addObserver(forName: .memoDidDelete, object: nil, queue: .main) { [weak self] noti in
+      guard let self = self else { return }
+      
+      if let index = noti.userInfo?["index"] as? Int {
+        let indexPath = IndexPath(row: index, section: 0)
+        
+        self.deleteTargetIndexPath = indexPath
+      }
+    }
   }
   
   override func viewIsAppearing(_ animated: Bool) {
@@ -51,6 +63,11 @@ class ListViewController: UIViewController {
     if let reloadTargetIndexPath {
       self.memoTableView.reloadRows(at: [reloadTargetIndexPath], with: .automatic)
       self.reloadTargetIndexPath = nil
+    }
+    
+    if let deleteTargetIndexPath {
+      self.memoTableView.deleteRows(at: [deleteTargetIndexPath], with: .automatic)
+      self.deleteTargetIndexPath = nil
     }
   }
   
@@ -76,6 +93,14 @@ extension ListViewController: UITableViewDataSource {
     cell.detailTextLabel?.text = target.dateString
     
     return cell
+  }
+  
+  // 우측 스와이프 액션
+  func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    if editingStyle == .delete {
+      DataManager.shared.delete(at: indexPath.row)
+      tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
   }
 }
 

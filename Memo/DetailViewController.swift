@@ -7,11 +7,36 @@
 
 import UIKit
 
+extension Notification.Name {
+  static let memoDidDelete = Notification.Name("memoDidDelete")
+}
+
 class DetailViewController: UIViewController {
   
   @IBOutlet weak var contentTextView: UITextView!
-  
+
   var memo: MemoEntity?
+  
+  @IBAction func deleteMemo(_ sender: Any) {
+    let alert = UIAlertController(title: "삭제 확인", message: "정말 삭제하시겠습니까?", preferredStyle: .alert)
+    
+    let okAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+      guard let memo = self?.memo else { return }
+      
+      if let index = DataManager.shared.delete(entity: memo) {
+        print(index)
+        NotificationCenter.default.post(name: .memoDidDelete, object: nil, userInfo: ["index": index])
+      }
+      
+      self?.navigationController?.popViewController(animated: true)
+    }
+    alert.addAction(okAction)
+    
+    let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+    alert.addAction(cancelAction)
+    
+    present(alert, animated: true)
+  }
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -33,6 +58,8 @@ class DetailViewController: UIViewController {
       vc.editTarget = memo
     }
   }
+  
+  
   
   deinit {
     print(self, #function)

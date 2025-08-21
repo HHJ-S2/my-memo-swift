@@ -118,7 +118,7 @@ class DataManager {
   }
   
   func insert(memo: String) {
-    let newMemo = MemoEntity(context: mainContext)
+    let newMemo = MemoEntity(context: mainContext) // context에 자동으로 insert 됨
     
     newMemo.content = memo
     newMemo.insertDate = .now
@@ -130,5 +130,26 @@ class DataManager {
   func update(entity: MemoEntity, content: String) {
     entity.content = content
     saveContext()
+  }
+  
+  // return 값 사용하지 않았을때 경고 표시 해제
+  @discardableResult
+  func delete(entity: MemoEntity) -> Int? {
+    mainContext.delete(entity) // context에 자동으로 delete 됨
+    saveContext()
+    
+    // 메모 목록에서 삭제
+    if let index = list.firstIndex(of: entity) {
+      list.remove(at: index)
+      return index
+    }
+    
+    return nil
+  }
+  
+  func delete(at index: Int) {
+    let target = list[index]
+    
+    delete(entity: target)
   }
 }
