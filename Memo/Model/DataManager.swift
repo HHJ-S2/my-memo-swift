@@ -102,11 +102,16 @@ class DataManager {
   }
   
   // 메모 목록 패칭
-  func fetch() {
+  func fetch(keyword: String? = nil) {
     let request = MemoEntity.fetchRequest()
     
+    if let keyword {
+      // 검색조건 설정
+      request.predicate = NSPredicate(format: "%K CONTAINS [c] %@", #keyPath(MemoEntity.content), keyword)
+    }
+    
     // 내림차순 정렬
-    let sortByDateDesc = NSSortDescriptor(key: "insertDate", ascending: false)
+    let sortByDateDesc = NSSortDescriptor(keyPath: \MemoEntity.insertDate, ascending: false)
     
     request.sortDescriptors = [sortByDateDesc]
     

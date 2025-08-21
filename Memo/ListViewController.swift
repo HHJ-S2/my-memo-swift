@@ -16,10 +16,21 @@ class ListViewController: UIViewController {
   
   var deleteTargetIndexPath: IndexPath?
   
+  // 네비게이션 검색 바
+  func setupSearchBar() {
+    let searchController = UISearchController(searchResultsController: nil)
+   
+    searchController.searchBar.placeholder = "메모 내용으로 검색"
+    searchController.searchResultsUpdater = self // 업데이트 담당 VC 지정
+    
+    navigationItem.searchController = searchController
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
     DataManager.shared.fetch()
+    setupSearchBar()
     
     // 메모 추가시 tableView reload
     NotificationCenter.default.addObserver(forName: .memoDidInsert, object: nil, queue: .main) { [weak self] _ in
@@ -107,5 +118,22 @@ extension ListViewController: UITableViewDataSource {
 extension ListViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     tableView.deselectRow(at: indexPath, animated: true)
+  }
+}
+
+extension ListViewController: UISearchResultsUpdating {
+  // 서치바로 검색시 호출
+  func updateSearchResults(for searchController: UISearchController) {
+    // 호출이 끝나기 전 항상 실행
+    defer {
+      memoTableView.reloadData()
+    }
+    
+    guard let keyword = searchController.searchBar.text, keyword.count > 0 else {
+      DataManager.shared.fetch()
+      return
+    }
+    
+    DataManager.shared.fetch(keyword: keyword)
   }
 }
