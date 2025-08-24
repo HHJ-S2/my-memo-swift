@@ -38,6 +38,8 @@ class ComposeViewController: UIViewController {
       return
     }
     
+    group?.lastUpdated = .now
+    
     if let editTarget {
       DataManager.shared.update(entity: editTarget, content: text)
       // NotificationCenter.default.post(name: .memoDidUpdate, object: nil, userInfo: ["memo": editTarget])

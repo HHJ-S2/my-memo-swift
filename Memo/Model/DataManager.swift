@@ -41,7 +41,7 @@ class DataManager {
     memoFetchedResults = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
     
     let groupRequest = GroupEntity.fetchRequest()
-    let sortByName = NSSortDescriptor(keyPath: \GroupEntity.name, ascending: true)
+    let sortByName = NSSortDescriptor(keyPath: \GroupEntity.title, ascending: true)
     
     groupRequest.sortDescriptors = [sortByName]
     

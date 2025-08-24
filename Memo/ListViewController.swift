@@ -52,7 +52,7 @@ class ListViewController: UIViewController {
     DataManager.shared.memoFetchedResults.delegate = self
     DataManager.shared.fetch(group: group)
     
-    navigationItem.title = group?.name ?? "그룹없음"
+    navigationItem.title = group?.title ?? "그룹없음"
     
     /**
     // 메모 추가시 tableView reload

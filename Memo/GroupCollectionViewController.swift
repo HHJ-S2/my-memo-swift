@@ -73,7 +73,9 @@ class GroupCollectionViewController: UICollectionViewController {
       cell.nameLabel.text = "그룹 없음"
     } else {
       let target = DataManager.shared.groupFetchedResults.object(at: indexPath)
-      cell.nameLabel.text = target.name
+      cell.nameLabel.text = target.title
+      
+      print(target.memoCount)
     }
     
     return cell
