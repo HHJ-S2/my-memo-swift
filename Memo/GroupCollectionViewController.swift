@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import CoreData
 
 class GroupCollectionViewController: UICollectionViewController {
+  
+  var updates = [() -> ()]()
   
   func setupCollectionViewLayout() {
     let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(0.5))
@@ -30,26 +33,101 @@ class GroupCollectionViewController: UICollectionViewController {
     super.viewDidLoad()
     
     setupCollectionViewLayout()
+    
+    DataManager.shared.groupFetchedResults.delegate = self
+  }
+  
+  // MARK: Navigation
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if let cell = sender as? UICollectionViewCell, let indexPath = collectionView.indexPath(for: cell) {
+      
+      // 추가한 그룹이 있는경우
+      if let sections = DataManager.shared.groupFetchedResults.sections, sections[indexPath.section].numberOfObjects > indexPath.item {
+        
+        // 메모목록의 group 변수에 할당
+        if let vc = segue.destination as? ListViewController {
+          vc.group = DataManager.shared.groupFetchedResults.object(at: indexPath)
+        }
+      }
+    }
   }
   
   // MARK: UICollectionViewDataSource
   
   override func numberOfSections(in collectionView: UICollectionView) -> Int {
-    return 1
+    return DataManager.shared.groupFetchedResults.sections?.count ?? 0
   }
   
-  
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return 100
+    guard let sections = DataManager.shared.groupFetchedResults.sections else { return 0 }
+    
+    return sections[section].numberOfObjects + 1
   }
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: GroupCollectionViewCell.self), for: indexPath) as! GroupCollectionViewCell
     
-    cell.nameLabel.text = "Group"
-    cell.contentView.backgroundColor = .systemGray6
+    // 그룹이 없는 마지막 셀
+    if let sections = DataManager.shared.groupFetchedResults.sections, sections[indexPath.section].numberOfObjects == indexPath.item {
+      cell.nameLabel.text = "그룹 없음"
+    } else {
+      let target = DataManager.shared.groupFetchedResults.object(at: indexPath)
+      cell.nameLabel.text = target.name
+    }
     
     return cell
   }
   
+}
+
+extension GroupCollectionViewController: NSFetchedResultsControllerDelegate {
+  func controllerWillChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
+    updates.removeAll()
+  }
+  
+  func controller(_ controller: NSFetchedResultsController<any NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    switch type {
+    case .insert:
+      if let insertIndexPath = newIndexPath {
+        updates.append { [weak self] in
+          self?.collectionView.insertItems(at: [insertIndexPath])
+        }
+      }
+      
+    case .delete:
+      if let deleteIndexPath = newIndexPath {
+        updates.append { [weak self] in
+          self?.collectionView.deleteItems(at: [deleteIndexPath])
+        }
+      }
+      
+    case .move:
+      if let originalIndexPath = indexPath, let targetIndexPath = newIndexPath {
+        updates.append { [weak self] in
+          self?.collectionView.moveItem(at: originalIndexPath, to: targetIndexPath)
+        }
+      }
+      
+    case .update:
+      if let updateIndexPath = indexPath {
+        updates.append { [weak self] in
+          self?.collectionView.reloadItems(at: [updateIndexPath])
+        }
+      }
+      
+    default:
+      break
+    }
+  }
+  
+  // Core Data에서 데이터 변경이 완료된 시점에 호출
+  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    // 여러 개의 삽입/삭제/이동 애니메이션을 한 번에 묶어서 실행
+    collectionView.performBatchUpdates { [weak self] in
+      self?.updates.forEach({ $0() }) // () -> void 타입의 updates를 모두 실행
+    } completion: { [weak self] _ in
+      self?.updates.removeAll()
+    }
+  }
 }

@@ -24,6 +24,8 @@ class ComposeViewController: UIViewController {
   // 편집 화면일때 이전 텍스트
   var originalContent = ""
   
+  var group: GroupEntity?
+  
   @IBOutlet weak var contnetTextView: UITextView!
   
   @IBAction func closeVC(_ sender: Any) {
@@ -40,7 +42,7 @@ class ComposeViewController: UIViewController {
       DataManager.shared.update(entity: editTarget, content: text)
       // NotificationCenter.default.post(name: .memoDidUpdate, object: nil, userInfo: ["memo": editTarget])
     } else {
-      DataManager.shared.insert(memo: text)
+      DataManager.shared.insert(memo: text, to: group)
       // NotificationCenter.default.post(name: .memoDidInsert, object: nil)
     }
     

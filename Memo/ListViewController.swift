@@ -17,6 +17,8 @@ class ListViewController: UIViewController {
   
   // var deleteTargetIndexPath: IndexPath?
   
+  var group: GroupEntity?
+  
   // 네비게이션 검색 바
   func setupSearchBar() {
     let searchController = UISearchController(searchResultsController: nil)
@@ -29,7 +31,7 @@ class ListViewController: UIViewController {
   
   @objc func resetCache() {
     NSFetchedResultsController<MemoEntity>.deleteCache(withName: nil)
-    DataManager.shared.fetch()
+    DataManager.shared.fetch(group: group)
     memoTableView.refreshControl?.endRefreshing()
   }
   
@@ -47,7 +49,10 @@ class ListViewController: UIViewController {
     setupSearchBar()
     setupPullToRefresh()
     
-    DataManager.shared.fetchedResults.delegate = self
+    DataManager.shared.memoFetchedResults.delegate = self
+    DataManager.shared.fetch(group: group)
+    
+    navigationItem.title = group?.name ?? "그룹없음"
     
     /**
     // 메모 추가시 tableView reload
@@ -107,8 +112,10 @@ class ListViewController: UIViewController {
     if let cell = sender as? UITableViewCell, let indexPath = memoTableView.indexPath(for: cell) {
       if let vc = segue.destination as? DetailViewController {
         // vc.memo = DataManager.shared.list[indexPath.row]
-        vc.memo = DataManager.shared.fetchedResults.object(at: indexPath)
+        vc.memo = DataManager.shared.memoFetchedResults.object(at: indexPath)
       }
+    } else if let vc = segue.destination.children.first as? ComposeViewController {
+      vc.group = group
     }
   }
 }
@@ -116,16 +123,18 @@ class ListViewController: UIViewController {
 extension ListViewController: UITableViewDataSource {
   // 섹션 개수
   func numberOfSections(in tableView: UITableView) -> Int {
-    return DataManager.shared.fetchedResults.sections?.count ?? 0
+    return DataManager.shared.memoFetchedResults.sections?.count ?? 0
   }
   
   // 섹션 내 row 개수
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     // return DataManager.shared.list.count
     
-    guard let sections = DataManager.shared.fetchedResults.sections else { return 0 }
+    guard let sections = DataManager.shared.memoFetchedResults.sections else { return 0 }
     
     let sectionInfo = sections[section]
+    
+    print("sectionInfo: \(sectionInfo.numberOfObjects)")
     
     return sectionInfo.numberOfObjects
   }
@@ -133,7 +142,7 @@ extension ListViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
     // let target = DataManager.shared.list[indexPath.row]
-    let target = DataManager.shared.fetchedResults.object(at: indexPath)
+    let target = DataManager.shared.memoFetchedResults.object(at: indexPath)
     
     cell.textLabel?.text = target.content
     cell.detailTextLabel?.text = target.dateString
@@ -165,11 +174,11 @@ extension ListViewController: UISearchResultsUpdating {
     }
     
     guard let keyword = searchController.searchBar.text, keyword.count > 0 else {
-      DataManager.shared.fetch()
+      DataManager.shared.fetch(group: group)
       return
     }
     
-    DataManager.shared.fetch(keyword: keyword)
+    DataManager.shared.fetch(group: group, keyword: keyword)
   }
 }
 
