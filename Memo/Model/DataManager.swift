@@ -242,9 +242,11 @@ class DataManager {
   
   // return 값 사용하지 않았을때 경고 표시 해제
   // @discardableResult
-  func delete(entity: MemoEntity) {
+  func delete(entity: NSManagedObject) {
+    // 메모 or 그룹 삭제
     mainContext.delete(entity) // context에 자동으로 delete 됨
     saveContext()
+    
     
     // 메모 목록에서 삭제
     // if let index = list.firstIndex(of: entity) {

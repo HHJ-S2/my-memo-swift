@@ -101,16 +101,27 @@ class GroupCollectionViewController: UICollectionViewController {
   
   // 컨텍스트 메뉴 활성화
   override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-    guard let indexPath = indexPaths.first else { return nil }
     
+    // 마지막 그룹없음 그룹은 컨텍스트 메뉴 비활성화
+    guard
+      let indexPath = indexPaths.first,
+      let sections = DataManager.shared.groupFetchedResults.sections,
+      sections[indexPath.section].numberOfObjects > indexPath.item
+    else { return nil }
+
     let targetGroup = DataManager.shared.groupFetchedResults.object(at: indexPath)
     
-    return UIContextMenuConfiguration(actionProvider:  { _ in
-      return UIMenu(children: [UIAction(title: "편집", image: UIImage(systemName: "pencil"), handler: { [weak self] _ in
-        // segue 실행
-        self?.performSegue(withIdentifier: "editSegue", sender: targetGroup)
-      })])
-    })
+    return UIContextMenuConfiguration { _ in
+      return UIMenu(children: [
+        UIAction(title: "편집", image: UIImage(systemName: "pencil"), handler: { [weak self] _ in
+          // segue 실행
+          self?.performSegue(withIdentifier: "editSegue", sender: targetGroup)
+        }),
+        UIAction(title: "삭제", image: UIImage(systemName: "trash"), attributes: .destructive, handler: { _ in
+          DataManager.shared.delete(entity: targetGroup)
+        })
+      ])
+    }
   }
   
   // 컨텍스트 메뉴 프리뷰 화면 수정 (프리뷰 나타날때)
@@ -180,7 +191,7 @@ extension GroupCollectionViewController: NSFetchedResultsControllerDelegate {
       }
       
     case .delete:
-      if let deleteIndexPath = newIndexPath {
+      if let deleteIndexPath = indexPath {
         updates.append { [weak self] in
           self?.collectionView.deleteItems(at: [deleteIndexPath])
         }
