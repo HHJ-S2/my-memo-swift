@@ -61,6 +61,8 @@ class GroupCollectionViewController: UICollectionViewController {
           vc.group = DataManager.shared.groupFetchedResults.object(at: indexPath)
         }
       }
+    } else if segue.identifier == "editSegue", let vc = segue.destination.children.first as? GroupComposeViewController {
+      vc.group = sender as? GroupEntity
     }
   }
   
@@ -97,6 +99,70 @@ class GroupCollectionViewController: UICollectionViewController {
     return cell
   }
   
+  // 컨텍스트 메뉴 활성화
+  override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+    guard let indexPath = indexPaths.first else { return nil }
+    
+    let targetGroup = DataManager.shared.groupFetchedResults.object(at: indexPath)
+    
+    return UIContextMenuConfiguration(actionProvider:  { _ in
+      return UIMenu(children: [UIAction(title: "편집", image: UIImage(systemName: "pencil"), handler: { [weak self] _ in
+        // segue 실행
+        self?.performSegue(withIdentifier: "editSegue", sender: targetGroup)
+      })])
+    })
+  }
+  
+  // 컨텍스트 메뉴 프리뷰 화면 수정 (프리뷰 나타날때)
+  override func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+    guard let cell = collectionView.cellForItem(at: indexPath) else { return nil }
+    
+    let params = UIPreviewParameters()
+    
+    // UIBezierPath: 직선이나 곡선을 그릴때 사용
+    params.visiblePath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: 30.0)
+    
+    return UITargetedPreview(view: cell, parameters: params)
+  }
+  
+  // 컨텍스트 메뉴 프리뷰 화면 수정 (프리뷰 사라질때)
+  override func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, dismissalPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+    guard let cell = collectionView.cellForItem(at: indexPath) else { return nil }
+    
+    let params = UIPreviewParameters()
+    
+    params.visiblePath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: 30.0)
+    
+    return UITargetedPreview(view: cell, parameters: params)
+  }
+  
+  // 컨텍스트 메뉴 프리뷰 화면 수정 (프리뷰 나타날때) iOS 13-16 지원
+  override func collectionView(_ collectionView: UICollectionView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    guard
+      let identifier = configuration.identifier as? IndexPath,
+      let cell = collectionView.cellForItem(at: identifier)
+    else { return nil }
+    
+    let params = UIPreviewParameters()
+    
+    params.visiblePath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: 30.0)
+    
+    return UITargetedPreview(view: cell, parameters: params)
+  }
+  
+  // 컨텍스트 메뉴 프리뷰 화면 수정 (프리뷰 사라질때) iOS 13-16 지원
+  override func collectionView(_ collectionView: UICollectionView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    guard
+      let identifier = configuration.identifier as? IndexPath,
+      let cell = collectionView.cellForItem(at: identifier)
+    else { return nil }
+    
+    let params = UIPreviewParameters()
+    
+    params.visiblePath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: 30.0)
+    
+    return UITargetedPreview(view: cell, parameters: params)
+  }
 }
 
 extension GroupCollectionViewController: NSFetchedResultsControllerDelegate {

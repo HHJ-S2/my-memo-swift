@@ -131,10 +131,13 @@
                     <navigationItem key="navigationItem" title="그룹" largeTitleDisplayMode="always" id="jUe-rZ-EmN">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Dph-KA-EB7">
                             <connections>
-                                <segue destination="lir-Xj-pcQ" kind="presentation" id="wlm-U9-YsH"/>
+                                <segue destination="lir-Xj-pcQ" kind="presentation" identifier="addSegue" id="wlm-U9-YsH"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="lir-Xj-pcQ" kind="presentation" identifier="editSegue" id="3I4-Fe-ECT"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PZu-V0-Tpq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -367,6 +370,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="3I4-Fe-ECT"/>
         <segue reference="d3J-0w-QTD"/>
     </inferredMetricsTieBreakers>
     <resources>

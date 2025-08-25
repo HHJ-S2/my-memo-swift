@@ -289,4 +289,15 @@ class DataManager {
     
     saveContext()
   }
+  
+  // 그룹 수정
+  func update(group: GroupEntity, name: String, backgroundColor: UIColor?){
+    group.title = name
+    
+    if let backgroundColor {
+      group.backgroundColor = TransformableColor(cgColor: backgroundColor.cgColor)
+    }
+    
+    saveContext()
+  }
 }

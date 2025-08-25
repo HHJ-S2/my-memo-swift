@@ -18,7 +18,7 @@ class GroupCollectionViewCell: UICollectionViewCell {
   override func awakeFromNib() {
     super.awakeFromNib()
     
-    contentView.layer.cornerRadius = 20
+    contentView.layer.cornerRadius = 30
     contentView.clipsToBounds = true
   }
 }
