@@ -89,7 +89,7 @@ class GroupCollectionViewController: UICollectionViewController {
       let target = DataManager.shared.groupFetchedResults.object(at: indexPath)
       
       cell.nameLabel.text = target.title
-      cell.contentView.backgroundColor = .systemGray2
+      cell.contentView.backgroundColor = target.backgroundColor ?? .tertiarySystemFill
       cell.lastUpdateDateLabel.text = target.lastUpdated?.relativeDateString
       cell.memoCountLabel.text = "\(target.memoCount)"
     }

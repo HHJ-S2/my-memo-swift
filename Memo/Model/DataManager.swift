@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 extension Notification.Name {
   static let ungroupedInfoDidUpdate = Notification.Name("ungroupedInfoDidUpdate")
@@ -165,11 +166,11 @@ class DataManager {
       }
       
       let groupList: [[String: Any]] = [
-        ["name": "일상"],
-        ["name": "업무"],
-        ["name": "공부"],
-        ["name": "쇼핑"],
-        ["name": "기타"]
+        ["title": "일상"],
+        ["title": "업무"],
+        ["title": "공부"],
+        ["title": "쇼핑"],
+        ["title": "기타"]
       ]
       
       let groupInsertRequest = NSBatchInsertRequest(entityName: "Group", objects: groupList)
@@ -274,5 +275,18 @@ class DataManager {
     }
     
     NotificationCenter.default.post(name: .ungroupedInfoDidUpdate, object: nil)
+  }
+  
+  // 그룹 추가
+  func insert(group: String, backgroundColor: UIColor?){
+    let newGroup = GroupEntity(context: mainContext)
+    
+    newGroup.title = group
+    
+    if let backgroundColor {
+      newGroup.backgroundColor = TransformableColor(cgColor: backgroundColor.cgColor)
+    }
+    
+    saveContext()
   }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Group" representedClassName="GroupEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="backgroundColor" optional="YES" attributeType="Transformable" valueTransformerName="ColorTransformer" customClassName="TransformableColor"/>
         <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="memoCount" optional="YES" attributeType="Integer 64" derived="YES" derivationExpression="memos.@count" usesScalarValueType="YES"/>
         <attribute name="title" attributeType="String" elementID="GroupName"/>

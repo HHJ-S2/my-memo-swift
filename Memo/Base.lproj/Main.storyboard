@@ -10,6 +10,57 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Group Compose View Controller-->
+        <scene sceneID="pgU-gT-v0h">
+            <objects>
+                <viewController id="i46-rU-nUS" customClass="GroupComposeViewController" customModule="Memo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6UY-fY-JcC">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ltl-R1-P7J">
+                                <rect key="frame" x="20" y="76" width="353" height="34"/>
+                                <subviews>
+                                    <colorWell contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" supportsAlpha="NO" title="그룹 배경색" translatesAutoresizingMaskIntoConstraints="NO" id="chd-Ea-AM0">
+                                        <rect key="frame" x="0.0" y="3" width="28" height="28"/>
+                                    </colorWell>
+                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="그룹 이름을 입력해주세요." textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="J0D-X4-aXE">
+                                        <rect key="frame" x="48" y="0.0" width="305" height="34"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="UUB-tZ-QUx"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="UUB-tZ-QUx" firstAttribute="trailing" secondItem="ltl-R1-P7J" secondAttribute="trailing" constant="20" id="OAC-l6-R0f"/>
+                            <constraint firstItem="ltl-R1-P7J" firstAttribute="top" secondItem="UUB-tZ-QUx" secondAttribute="top" constant="20" id="bbq-MJ-s5r"/>
+                            <constraint firstItem="ltl-R1-P7J" firstAttribute="leading" secondItem="UUB-tZ-QUx" secondAttribute="leading" constant="20" id="rfC-rS-907"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="HLf-NT-gSo">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="xvE-rM-SUV">
+                            <connections>
+                                <action selector="closeVC:" destination="i46-rU-nUS" id="bWO-9R-JLu"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="Kq3-mM-0hB">
+                            <connections>
+                                <action selector="save:" destination="i46-rU-nUS" id="EhY-cF-BOj"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="backgroundColorWell" destination="chd-Ea-AM0" id="BAH-rR-DZa"/>
+                        <outlet property="nameField" destination="J0D-X4-aXE" id="kMS-oV-fj5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VU9-j7-p7q" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2079" y="-763"/>
+        </scene>
         <!--그룹-->
         <scene sceneID="rh1-Gq-EOw">
             <objects>
@@ -77,7 +128,13 @@
                             <outlet property="delegate" destination="1Fx-f4-gIx" id="OhG-Vs-zdB"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" title="그룹" largeTitleDisplayMode="always" id="jUe-rZ-EmN"/>
+                    <navigationItem key="navigationItem" title="그룹" largeTitleDisplayMode="always" id="jUe-rZ-EmN">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Dph-KA-EB7">
+                            <connections>
+                                <segue destination="lir-Xj-pcQ" kind="presentation" id="wlm-U9-YsH"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PZu-V0-Tpq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -198,7 +255,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dZm-Id-uDR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3094" y="-218"/>
+            <point key="canvasLocation" x="4020.6106870229005" y="-218.3098591549296"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2zC-gf-3fw">
@@ -234,7 +291,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NxL-hi-aiG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2117" y="-218"/>
+            <point key="canvasLocation" x="3043.5114503816794" y="-218.3098591549296"/>
         </scene>
         <!--메모 보기-->
         <scene sceneID="Exy-vS-McW">
@@ -289,6 +346,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F7E-5A-9so" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2116.7938931297708" y="498.59154929577466"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Ird-2c-prY">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="lir-Xj-pcQ" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="X0l-q6-ue4">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="i46-rU-nUS" kind="relationship" relationship="rootViewController" id="zab-4U-3br"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PSm-ZT-ODl" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1053" y="-763"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
