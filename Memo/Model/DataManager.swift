@@ -8,6 +8,10 @@
 import Foundation
 import CoreData
 
+extension Notification.Name {
+  static let ungroupedInfoDidUpdate = Notification.Name("ungroupedInfoDidUpdate")
+}
+
 class DataManager {
   // 싱글톤
   static let shared = DataManager()
@@ -19,6 +23,17 @@ class DataManager {
   let memoFetchedResults: NSFetchedResultsController<MemoEntity>
   
   let groupFetchedResults: NSFetchedResultsController<GroupEntity>
+  
+  var ungroupedMemoCount = 0
+  
+  var ungroupedLastUpdate: Date? {
+    get {
+      UserDefaults.standard.object(forKey: "ungroupedLastUpdate") as? Date
+    }
+    set {
+      UserDefaults.standard.set(newValue, forKey: "ungroupedLastUpdate")
+    }
+  }
   
   // 외부에서 생성하지 못하도록 private 키워드 추가
   private init() {
@@ -53,6 +68,8 @@ class DataManager {
     } catch {
       print(error)
     }
+    
+    updateUngroupedInfo()
   }
   
   /**
@@ -85,6 +102,7 @@ class DataManager {
   
   func saveContext () {
     let context = persistentContainer.viewContext
+    
     if context.hasChanges {
       do {
         try context.save()
@@ -93,6 +111,8 @@ class DataManager {
         fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
       }
     }
+    
+    updateUngroupedInfo()
   }
   
   func insertDummyData() {
@@ -239,5 +259,20 @@ class DataManager {
     let target = memoFetchedResults.object(at: indexPath)
     
     delete(entity: target)
+  }
+  
+  // 그룹없는 메모 관련 업데이트
+  func updateUngroupedInfo() {
+    let request = MemoEntity.fetchRequest()
+    
+    request.predicate = NSPredicate(format: "%K == NIL", #keyPath(MemoEntity.group))
+    
+    do {
+      ungroupedMemoCount = try mainContext.count(for: request)
+    } catch {
+      print(error)
+    }
+    
+    NotificationCenter.default.post(name: .ungroupedInfoDidUpdate, object: nil)
   }
 }

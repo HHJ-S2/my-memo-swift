@@ -13,10 +13,10 @@ class GroupCollectionViewController: UICollectionViewController {
   var updates = [() -> ()]()
   
   func setupCollectionViewLayout() {
-    let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(0.5))
+    let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .estimated(200))
     let item = NSCollectionLayoutItem(layoutSize: itemSize)
     
-    let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(100))
+    let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(200))
     let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
     group.interItemSpacing = .flexible(10)
     
@@ -35,6 +35,17 @@ class GroupCollectionViewController: UICollectionViewController {
     setupCollectionViewLayout()
     
     DataManager.shared.groupFetchedResults.delegate = self
+
+    NotificationCenter.default.addObserver(forName: .ungroupedInfoDidUpdate, object: nil, queue: .main) { [weak self] _ in
+      
+      // numberOfObjects: 섹션안에 있는 셀의 개수
+      if let index = DataManager.shared.groupFetchedResults.sections?.first?.numberOfObjects {
+        // 마지막 indexPath
+        let indexPath = IndexPath(item: index, section: 0)
+        
+        self?.collectionView.reloadItems(at: [indexPath])
+      }
+    }
   }
   
   // MARK: Navigation
@@ -71,11 +82,16 @@ class GroupCollectionViewController: UICollectionViewController {
     // 그룹이 없는 마지막 셀
     if let sections = DataManager.shared.groupFetchedResults.sections, sections[indexPath.section].numberOfObjects == indexPath.item {
       cell.nameLabel.text = "그룹 없음"
+      cell.contentView.backgroundColor = .yellow
+      cell.lastUpdateDateLabel.text = DataManager.shared.ungroupedLastUpdate?.relativeDateString
+      cell.memoCountLabel.text = "\(DataManager.shared.ungroupedMemoCount)"
     } else {
       let target = DataManager.shared.groupFetchedResults.object(at: indexPath)
-      cell.nameLabel.text = target.title
       
-      print(target.memoCount)
+      cell.nameLabel.text = target.title
+      cell.contentView.backgroundColor = .systemGray2
+      cell.lastUpdateDateLabel.text = target.lastUpdated?.relativeDateString
+      cell.memoCountLabel.text = "\(target.memoCount)"
     }
     
     return cell
