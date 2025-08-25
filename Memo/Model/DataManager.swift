@@ -48,6 +48,7 @@ class DataManager {
     
     persistentContainer = container
     mainContext = persistentContainer.viewContext
+    mainContext.undoManager = UndoManager() // 작업 취소
     
     let request = MemoEntity.fetchRequest()
     let sortByDateDesc = NSSortDescriptor(keyPath: \MemoEntity.insertDate, ascending: false)
@@ -280,7 +281,7 @@ class DataManager {
   }
   
   // 그룹 추가
-  func insert(group: String, backgroundColor: UIColor?){
+  func insert(group: String, backgroundColor: UIColor?) throws {
     let newGroup = GroupEntity(context: mainContext)
     
     newGroup.title = group
@@ -289,17 +290,57 @@ class DataManager {
       newGroup.backgroundColor = TransformableColor(cgColor: backgroundColor.cgColor)
     }
     
-    saveContext()
+    do {
+      try newGroup.validateForInsert()
+      saveContext()
+    } catch let error as NSError {
+      mainContext.rollback() // 문제가 생긴 context 롤백
+      
+      switch error.code {
+      case NSValidationStringTooShortError, NSValidationStringTooLongError:
+        if let attr = error.userInfo[NSValidationKeyErrorKey] as? String, attr == "title" {
+          throw "그룹 이름은 2~10자 사이로 입력해주세요"
+        } else {
+          throw error.localizedDescription
+        }
+        
+      default:
+        throw error.localizedDescription
+      }
+    } catch {
+      print(error)
+      mainContext.rollback()
+    }
   }
   
   // 그룹 수정
-  func update(group: GroupEntity, name: String, backgroundColor: UIColor?){
+  func update(group: GroupEntity, name: String, backgroundColor: UIColor?) throws {
     group.title = name
     
     if let backgroundColor {
       group.backgroundColor = TransformableColor(cgColor: backgroundColor.cgColor)
     }
     
-    saveContext()
+    do {
+      try group.validateForUpdate()
+      saveContext()
+    } catch let error as NSError {
+      mainContext.rollback()
+      
+      switch error.code {
+      case NSValidationStringTooShortError, NSValidationStringTooLongError:
+        if let attr = error.userInfo[NSValidationKeyErrorKey] as? String, attr == "title" {
+          throw "그룹 이름은 2~10자 사이로 입력해주세요"
+        } else {
+          throw error.localizedDescription
+        }
+        
+      default:
+        throw error.localizedDescription
+      }
+    } catch {
+      print(error)
+      mainContext.rollback()
+    }
   }
 }

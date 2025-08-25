@@ -15,18 +15,31 @@ class GroupComposeViewController: UIViewController {
   
   @IBOutlet weak var nameField: UITextField!
   
-  
   @IBAction func closeVC(_ sender: Any) {
+    dismiss(animated: true)
   }
   
   @IBAction func save(_ sender: Any) {
-    guard let text = nameField.text, text.count > 0 else { return }
+    guard
+      let text = nameField.text,
+      (2...10).contains(text.count)
+    else { return }
     
     if let group {
-      // 그룹 수정
-      DataManager.shared.update(group: group, name: text, backgroundColor: backgroundColorWell.selectedColor)
+      do {
+        // 그룹 수정
+        try DataManager.shared.update(group: group, name: text, backgroundColor: backgroundColorWell.selectedColor)
+      } catch {
+        showAlert(error: error)
+        return
+      }
     } else {
-      DataManager.shared.insert(group: text, backgroundColor: backgroundColorWell.selectedColor)
+      do {
+        try DataManager.shared.insert(group: text, backgroundColor: backgroundColorWell.selectedColor)
+      } catch {
+        showAlert(error: error)
+        return
+      }
     }
     
     dismiss(animated: true)

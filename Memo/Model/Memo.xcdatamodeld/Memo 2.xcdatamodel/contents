@@ -4,7 +4,7 @@
         <attribute name="backgroundColor" optional="YES" attributeType="Transformable" valueTransformerName="ColorTransformer" customClassName="TransformableColor"/>
         <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="memoCount" optional="YES" attributeType="Integer 64" derived="YES" derivationExpression="memos.@count" usesScalarValueType="YES"/>
-        <attribute name="title" attributeType="String" elementID="GroupName"/>
+        <attribute name="title" attributeType="String" minValueString="2" maxValueString="10" elementID="GroupName"/>
         <relationship name="memos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Memo" inverseName="group" inverseEntity="Memo"/>
     </entity>
     <entity name="Memo" representedClassName="MemoEntity" syncable="YES" codeGenerationType="category">
