@@ -8,7 +8,7 @@
         <relationship name="memos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Memo" inverseName="group" inverseEntity="Memo"/>
     </entity>
     <entity name="Memo" representedClassName="MemoEntity" syncable="YES" codeGenerationType="category">
-        <attribute name="content" attributeType="String"/>
+        <attribute name="content" attributeType="String" minValueString="1" maxValueString="10000"/>
         <attribute name="insertDate" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="group" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Group" inverseName="memos" inverseEntity="Group"/>
     </entity>

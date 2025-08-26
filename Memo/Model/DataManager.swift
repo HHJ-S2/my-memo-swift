@@ -225,15 +225,24 @@ class DataManager {
     }
   }
   
-  func insert(memo: String, to group: GroupEntity?) {
+  func insert(memo: String, to group: GroupEntity?) throws {
     let newMemo = MemoEntity(context: mainContext) // context에 자동으로 insert 됨
     
     newMemo.content = memo
     newMemo.insertDate = .now
     newMemo.group = group
-    
-    saveContext()
     // list.insert(newMemo, at: 0) // 메모 목록에 추가
+    
+    do {
+      try newMemo.validateForInsert()
+      saveContext()
+    } catch let error as NSError {
+      mainContext.rollback()
+      throw error.localizedDescription
+    } catch {
+      print(error)
+      mainContext.rollback()
+    }
   }
   
   func update(entity: MemoEntity, content: String) {

@@ -33,8 +33,8 @@ class ComposeViewController: UIViewController {
   }
   
   @IBAction func save(_ sender: Any) {
-    guard let text = contnetTextView.text, text.count > 0 else {
-      // TODO: 경고창 추가
+    guard let text = contnetTextView.text, (1 ... 10000).contains(text.count) else {
+      showAlert(message: "내용은 1 ~ 10,000자")
       return
     }
     
@@ -49,7 +49,12 @@ class ComposeViewController: UIViewController {
       DataManager.shared.update(entity: editTarget, content: text)
       // NotificationCenter.default.post(name: .memoDidUpdate, object: nil, userInfo: ["memo": editTarget])
     } else {
-      DataManager.shared.insert(memo: text, to: group)
+      do {
+        try DataManager.shared.insert(memo: text, to: group)
+      } catch {
+        showAlert(error: error)
+        return
+      }
       // NotificationCenter.default.post(name: .memoDidInsert, object: nil)
     }
     
